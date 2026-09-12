@@ -1,0 +1,263 @@
+# AI INSTRUCTION SYSTEM — CONSTITUTION (Sumber Kebenaran Tunggal)
+
+File ini adalah **konstitusi** dari sistem instruksi untuk semua AI coding agent di proyek ini. Konstitusi ini memastikan arsitektur, workflow, dan standar engineering tetap konsisten.
+
+> [!CRITICAL]
+> **PROTOKOL WAJIB — BACA SEBELUM MENULIS KODE**
+>
+> Anda DILARANG melakukan perubahan kode, migrasi, service, controller, atau UI SEBELUM membaca:
+>
+> 1. **File ini** — konstitusi: prioritas, scope, workflow, quality gates.
+> 2. **`ai-instructions/01-governance.md`** — hierarchy, conflict resolution, rule scope.
+> 3. **`ai-instructions/02-agent-workflow.md`** — workflow wajib 10 langkah.
+> 4. **Modul proyek yang berlaku di `ai-instructions/12-project-specific/`**.
+> 5. **`MASTER_BUILD_SPECIFICATION.md` di root proyek** — spesifikasi build proyek yang detil, presisi, dan lengkap (nama, fitur, database design, konvensi, dependensi, alur bisnis). Jika file ini **tidak ada**, Anda WAJIB BERHENTI, bertanya secara mendetil kepada operator/programmer yang menugaskan, lalu **membuat file ini secara lengkap dan presisi** sebelum menulis kode apapun (lihat bagian 12).
+>
+> PELANGGARAN = KEGAGALAN TOTAL. TIDAK ADA PENGECUALIAN.
+
+---
+
+## 1. CARA MEMBACA SISTEM INSTRUKSI
+
+Setiap agent WAJIB membaca file dalam urutan berikut:
+
+1. **Konstitusi ini** — memahami hierarki, prioritas, scope, workflow, dan gates.
+2. **`ai-instructions/01-governance.md`** — aturan meta dan resolusi konflik.
+3. **`ai-instructions/02-agent-workflow.md`** — urutan kerja wajib.
+4. **Modul topikal yang relevan** (`03`–`11`) sesuai teknologi dan tugas.
+5. **Modul project-specific** (`12-project-specific/`) yang cocok dengan repository saat ini.
+6. **`MASTER_BUILD_SPECIFICATION.md`** di root proyek — spesifikasi build proyek (bagian 12). Jika tidak ada, buat terlebih dahulu via diskusi mendetil dengan operator.
+
+Jangan hanya membaca README. Jangan menyimpulkan dari nama file. Baca seluruh modul yang relevan sebelum menulis kode.
+
+---
+
+## 2. FILE MAP INSTRUKSI
+
+| File | Topik | Scope |
+|------|-------|-------|
+| `ai-instructions.md` | **File ini — konstitusi / entry point** | GLOBAL |
+| `ai-instructions/01-governance.md` | Priority, conflict resolution, rule scope | GLOBAL |
+| `ai-instructions/02-agent-workflow.md` | Workflow wajib, decision trees, checklist fitur | GLOBAL |
+| `ai-instructions/03-architecture.md` | Layer architecture, dependency, patterns, decisions | UNIVERSAL + PROJECT |
+| `ai-instructions/04-coding-standards.md` | PHP/TypeScript/Vue style, formatting | UNIVERSAL + PROJECT |
+| `ai-instructions/05-naming.md` | Naming convention semua artifact | UNIVERSAL + PROJECT |
+| `ai-instructions/06-testing.md` | Testing strategy, pola, konvensi | UNIVERSAL + PROJECT |
+| `ai-instructions/07-security.md` | Auth, authorization, validation, secrets | UNIVERSAL + PROJECT |
+| `ai-instructions/08-git.md` | Branching, commits, version control | UNIVERSAL + PROJECT |
+| `ai-instructions/09-tools.md` | Linter, formatter, runtime, static analysis | UNIVERSAL + PROJECT |
+| `ai-instructions/10-quality-gates.md` | Quality gates, verifikasi akhir | GLOBAL |
+| `ai-instructions/11-forbidden-behavior.md` | Larangan eksplisit | GLOBAL |
+| `ai-instructions/12-project-specific/lingusid.md` | Aturan invarian LingSID | PROJECT-SPECIFIC |
+| `ai-instructions/12-project-specific/canonical-snippets.md` | Bank snippet kanonik verbatim LingSID (signature, abstraksi, gaya) | PROJECT-SPECIFIC |
+| `ai-instructions/README.md` | Laporan analisis & deliverable | DOKUMENTASI |
+
+> **Catatan:** `MASTER_BUILD_SPECIFICATION.md` bukan bagian dari set instruksi ini — file tersebut berada di **root repository proyek yang sedang dikerjakan** dan merupakan spesifikasi build proyek. Ia WAJIB dibaca sebelum kode (bagian 12).
+
+---
+
+## 3. PRINSIP ENGINEERING
+
+Prinsip-prinsip berikut berlaku universal:
+
+1. **Business logic tidak pernah di Controller.** Controller = tipis (input → delegasi → response). Pemisahan logika WAJIB.
+2. **Data access terisolasi.** Jangan panggil data layer langsung dari lapisan presentasi.
+3. **Validasi input WAJIB server-side.** Tidak pernah mempercayai input pengguna tanpa validasi.
+4. **Incremental, bukan dump raksasa.** Kerjakan per fase/modul; verifikasi tiap langkah sebelum lanjut.
+5. **Scope discipline.** Hanya ubah file yang relevan dengan fitur. Jangan refactor kode yang berfungsi.
+6. **Analogue-first.** Sebelum membuat sesuatu, cari implementasi serupa yang sudah ada; ikuti polanya.
+7. **Preserve intent, minimalkan perubahan terkait.** Jangan perbaiki bug yang tidak berhubungan.
+8. **Audit & jejak.** Mutasi data yang penting tercatat. Jangan menghapus jejak history.
+9. **Keamanan dasar.** Tidak ada password plaintext, tidak ada rahasia di git, tidak ada `dd()/dump()` pada kode tercommit.
+10. **Disiplin git.** Jangan commit langsung di `develop`/`main`. Satu fitur satu branch (dari `develop`). Commit message mengikuti conventional commits.
+11. **Quality gates.** Static analysis lalu test yang relevan sebelum pekerjaan dianggap selesai.
+12. **Build specification first.** Tidak pernah menulis kode sebelum `MASTER_BUILD_SPECIFICATION.md` dibaca; bila tidak ada, buat via diskusi mendetil dengan operator (bagian 12).
+
+---
+
+## 4. PRIORITY SYSTEM
+
+Saat aturan bertentangan, selesaikan dengan urutan ini (tertinggi menang):
+
+```
+LEVEL 0  — System / platform constraints (PHP, Laravel, browser)
+LEVEL 1  — User explicit instructions (task saat ini)
+LEVEL 2  — Project-specific mandatory rules (invarian, MUST)
+LEVEL 3  — Global engineering rules (MUST, REQUIRED)
+LEVEL 4  — Project conventions (SHOULD)
+LEVEL 5  — Preferences (PREFER, RECOMMENDED)
+LEVEL 6  — AI defaults (MAY, OPTIONAL)
+```
+
+Instruksi eksplisit user mengalahkan semua aturan di bawah LEVEL 1. Document deviation jika menyentuh integritas arsitektur.
+
+---
+
+## 5. RULE SCOPE
+
+| Scope | Makna |
+|-------|-------|
+| GLOBAL | Berlaku di semua proyek dan semua tugas |
+| UNIVERSAL | Berlaku untuk semua proyek yang memakai sistem ini |
+| PROJECT-SPECIFIC | Berlaku hanya bila repository cocok dengan kondisi proyek |
+| MODULE | Berlaku hanya pada bagian tertentu dari codebase |
+| LANGUAGE | Berlaku hanya pada bahasa tertentu |
+| FRAMEWORK | Berlaku hanya pada framework tertentu |
+| TASK | Berlaku hanya pada tipe tugas tertentu |
+
+Jangan memaksakan aturan project-specific sebagai aturan global. Detail di `01-governance.md`.
+
+---
+
+## 6. SEMANTIC STRENGTH
+
+| Keyword | Makna |
+|---------|-------|
+| MUST / REQUIRED / WAJIB | Persyaratan mutlak. Tanpa pengecualian. |
+| MUST NOT / DILARANG / FORBIDDEN | Larangan mutlak. Tanpa pengecualian. |
+| SHOULD / SHOULD NOT | Rekomendasi kuat; pelanggaran butuh justifikasi. |
+| PREFER / RECOMMENDED | Pendekatan yang disukai; alternatif diterima dengan alasan. |
+| MAY / OPTIONAL | Diizinkan tapi tidak diwajibkan. |
+
+Jangan eskalasi SHOULD → MUST. Jangan deeskalasi MUST → SHOULD.
+
+---
+
+## 7. RESOLUSI KONFLIK
+
+```
+1. Prioritas lebih tinggi menang (LEVEL 0 > LEVEL 6).
+2. Aturan lebih spesifik mengalahkan yang lebih umum.
+3. Scope lebih sempit mengalahkan scope lebih luas.
+4. Aturan eksplisit yang menyebut aturan lain menang.
+5. Jika belum tuntas: pilih yang melindungi DATA INTEGRITY > FINANCIAL
+   CORRECTNESS > SECURITY > AUDITABILITY > UX > VISUAL POLISH.
+6. Jika masih belum tuntas: BERHENTI dan tanya user. Dilarang memilih arbitrer.
+```
+
+---
+
+## 8. WORKFLOW WAJIB (Ringkasan)
+
+```
+UNDERSTAND → INSPECT → FIND ANALOGUES → PLAN → IMPLEMENT
+→ STATIC ANALYSIS → TEST (hanya jika diminta) → DIFF REVIEW
+→ STYLE REVIEW → FINALIZE
+```
+
+Detail, decision trees, dan checklist fitur: `ai-instructions/02-agent-workflow.md`.
+
+---
+
+## 9. MENGERJAKAN PROYEK BARU (Future Project Onboarding)
+
+Saat bekerja di proyek baru, agent WAJIB:
+
+1. Load konstitusi ini + `01-governance.md` + `02-agent-workflow.md`.
+2. Baca `MASTER_BUILD_SPECIFICATION.md` di root proyek; jika tidak ada, buat melalui diskusi mendetil dengan operator (bagian 12).
+3. Inspect repository saat ini (`routes`, `app/`, `resources/js/pages/`, `composer.json`, `package.json`, `phpunit.xml`, `phpstan.neon`, `.editorconfig`).
+4. Deteksi teknologi proyek (Laravel/Blade vs Laravel/Inertia/Vue; SQLite/MySQL; bun/npm).
+5. Deteksi konvensi project-specific di repository (pola direktori, pola penamaan, pola action/repository).
+6. Terapkan global rules.
+7. Terapkan aturan framework/language yang berlaku (Laravel, PHP, Vue, TypeScript).
+8. Terapkan aturan repository-specific (termasuk `12-project-specific/` jika cocok).
+9. Resolve conflict sesuai hierarki pada bagian 4.
+10. Bekerja mengikuti workflow bagian 8.
+11. Validasi terhadap quality gates di bagian 10.
+
+Jangan berasumsi semua proyek berikutnya memakai stack yang sama. Deteksi, jangan tebak.
+
+---
+
+## 10. QUALITY GATES
+
+Pekerjaan dianggap selesai hanya jika:
+
+- [ ] Code mengikuti pola yang ada (punya analogue di repository).
+- [ ] Static analysis lulus (level sesuai konfigurasi proyek).
+- [ ] Test relevan lulus (hanya bila diminta).
+- [ ] Tidak ada file tak-terkait yang diubah.
+- [ ] Code style cocok dengan file tetangga.
+- [ ] Tidak ada komentar yang ditambahkan tanpa diminta.
+- [ ] Tidak ada rahasia/data sensitif yang diperkenalkan.
+- [ ] Scope terbatas pada fitur yang diminta.
+- [ ] Menghormati semua naming convention.
+- [ ] Tidak ada `dd()`, `dump()`, `ray()` pada kode tercommit.
+
+Gates tambahan project-specific: lihat `ai-instructions/10-quality-gates.md` dan module proyek.
+
+---
+
+## 11. FINAL VERIFICATION
+
+Sebelum menyelesaikan tugas:
+
+1. Semua file yang dibuat/diubah memang diperlukan.
+2. Code mengikuti seluruh konvensi proyek.
+3. Static analysis lulus.
+4. Tidak ada speculative change.
+5. Scope terbatas pada fitur yang diminta.
+6. Self-audit terhadap checklist di bagian 10.
+
+---
+
+## 12. MASTER_BUILD_SPECIFICATION — SPESIFIKASI BUILD PROYEK
+
+`MASTER_BUILD_SPECIFICATION.md` di **root repository proyek** adalah **satu-satunya sumber acuan spesifikasi proyek** bagi AI. File ini mendokumentasikan secara **detil, presisi, dan lengkap** semua hal tentang proyek yang dibutuhkan untuk membangun tanpa menebak, termasuk (tidak terbatas pada):
+
+- Nama proyek, domain, dan tujuan.
+- Stack teknologi beserta versi.
+- Daftar fitur lengkap per modul (existing, planned, dan arsitekturnya).
+- Database design: daftar tabel + kolom + tipe + relasi + index + enum nilai.
+- Model/entitas dan konvensi penamaannya.
+- Alur bisnis, aturan domain, dan batasan.
+- Dependensi/package yang diizinkan.
+- Konvensi project-specific dan hal lain yang bisa dipikirkan (UI/UX, bahasa konten, testing).
+
+**Aturan WAJIB:**
+
+1. **Baca sebelum kode.** `MASTER_BUILD_SPECIFICATION.md` WAJIB dibaca sebelum menulis kode apapun — bersama konstitusi, governance, workflow, dan module proyek (protokol CRITICAL di atas).
+2. **Jika tidak tersedia, BERHENTI dan BUAT.** Jangan menebak. Tanya operator/programmer yang menugaskan secara **mendetil** (fitur, entitas, database design, konvensi, dependensi), lalu buat `MASTER_BUILD_SPECIFICATION.md` yang **lengkap, detil, dan presisi**. Konfirmasi ke operator sebelum file dianggap valid.
+3. **Spesifikasi > aturan umum.** Isi file ini berlaku sebagai definisi proyek (LEVEL 2 — project-specific mandatory) dan mengalahkan aturan framework/global/best-practice. Hanya instruksi eksplisit user (LEVEL 1) yang bisa mengalahkannya.
+4. **Sinkronkan.** Bila fitur berubah signifikan dan operator memintanya, perbarui file ini. Jangan menghapus/mengganti definisi tanpa konfirmasi.
+5. **Referensi lintas.** Ai-instructions ini tidak menggantikan, dan tidak boleh bertentangan dengan, isi `MASTER_BUILD_SPECIFICATION.md`; perbedaan diselesaikan via hierarki prioritas pada bagian 4.
+
+---
+
+## 13. MEMBUAT / MEMPERBARUI SET INSTRUKSI (Instruction Authoring)
+
+Bagian ini berlaku saat bekerja di repository **AI-Instructions** ini — yaitu saat AI diminta membuat atau memperbarui set instruksi (konstitusi + modul) untuk framework atau proyek di masa depan.
+
+1. **Gunakan set `laravel/` sebagai referensi struktur & gaya.** Set `laravel/` adalah set terlengkap dan paling presisi: ikuti layout konstitusi (`ai-instructions.md`), pengelompokan modul `01`–`11`, `12-project-specific/`, `README.md`, dan alur regenerasi distribusi (`setup-ai-rules.sh`).
+2. **Baca modul `laravel/` sebagai bahan acuan saat menulis set baru.** Modul 03–11 dan `12-project-specific/*` (termasuk `lingusid.md` dan `canonical-snippets.md`) adalah referensi materi untuk menulis instruksi framework/proyek baru — tiru tingkat presisinya, gaya bahasa, struktur tabel, dan pola bukti source-anchored (verbatim snippet).
+3. **Pisahkan scope dengan benar:** universal (`01`–`11`) vs framework vs project-specific (`12-project-specific/`). Jangan memaksa aturan project/framework satu proyek menjadi universal.
+4. **Grounded pada bukti kode.** Instruksi arsitektur/pola/naming/testing harus diverifikasi terhadap repository acuan (seperti yang dilakukan untuk LingSID) dan disertai snippet verbatim + anchor `path:line`.
+5. **Regenerasi wajib.** Setiap perubahan pada template `laravel/` Wajib diikuti regenerasi distribusi (`./setup-ai-rules.sh laravel`) setelah menghapus `ai-instructions/master` agar semua salinan (master + distribusi) konsisten.
+
+---
+
+## 14. REFERENSI CEPAT
+
+```
+ai-instructions.md                     → File ini — konstitusi
+ai-instructions/01-governance.md       → Prioritas & resolusi konflik
+ai-instructions/02-agent-workflow.md   → Workflow wajib
+ai-instructions/03-architecture.md     → Arsitektur & pola
+ai-instructions/04-coding-standards.md → Standar kode
+ai-instructions/05-naming.md           → Konvensi penamaan
+ai-instructions/06-testing.md          → Konvensi testing
+ai-instructions/07-security.md         → Keamanan
+ai-instructions/08-git.md              → Git / version control
+ai-instructions/09-tools.md            → Penggunaan tools
+ai-instructions/10-quality-gates.md    → Quality gates
+ai-instructions/11-forbidden-behavior.md → Larangan
+ai-instructions/12-project-specific/   → Modul project-specific
+MASTER_BUILD_SPECIFICATION.md          → Root proyek — spesifikasi build (WAJIB dibaca)
+```
+
+---
+
+> **PERINGATAN TERAKHIR**: Jika Anda AI agent yang membaca file ini, Anda WAJIB membaca
+> modul di `ai-instructions/` DAN `MASTER_BUILD_SPECIFICATION.md` (root proyek — buat terlebih
+> dahulu jika belum ada) SEBELUM menulis kode apapun. Tidak ada pengecualian.
+> Tidak ada jalan pintas. Kepatuhan penuh terhadap konstitusi ini adalah SYARAT ABSOLUT.

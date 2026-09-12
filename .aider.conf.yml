@@ -1,0 +1,16 @@
+# laravel — Aider Configuration
+# File ini otomatis di-generate oleh setup-ai-rules.sh
+
+read:
+  - ai-instructions/01-governance.md
+  - ai-instructions/02-agent-workflow.md
+  - ai-instructions/03-architecture.md
+  - ai-instructions/04-coding-standards.md
+  - ai-instructions/05-naming.md
+  - ai-instructions/06-testing.md
+  - ai-instructions/07-security.md
+  - ai-instructions/08-git.md
+  - ai-instructions/09-tools.md
+  - ai-instructions/10-quality-gates.md
+  - ai-instructions/11-forbidden-behavior.md
+  - ai-instructions/README.md
