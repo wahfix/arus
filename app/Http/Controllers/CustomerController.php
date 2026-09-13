@@ -55,7 +55,11 @@ class CustomerController extends Controller implements HasMiddleware
 
     public function show(Customer $customer, Request $request): View
     {
-        $customer->load('employments');
+        if (auth()->user()->can('loan.view')) {
+            $customer->load(['employments', 'loans']);
+        } else {
+            $customer->load('employments');
+        }
 
         $tab = (string) $request->string('tab', 'overview');
 
