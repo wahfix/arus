@@ -1,4 +1,4 @@
-NADI — LOAN MANAGEMENT SYSTEM
+ARUS — LOAN MANAGEMENT SYSTEM
 
 MASTER BUILD SPECIFICATION
 
@@ -14,9 +14,9 @@ You are a senior Laravel architect, backend engineer, database designer, financi
 
 Build a complete, functional prototype called:
 
-NADI
+ARUS
 
-NADI is an internal loan/customer management system.
+ARUS is an internal loan/customer management system.
 
 The application manages:
 
@@ -87,15 +87,15 @@ The application must be able to run locally.
 
 Application name:
 
-NADI
+ARUS
 
 Meaning/branding:
 
-NADI is an independent business/application.
+ARUS is an independent business/application.
 
 The domain:
 
-"nadi.plenger.id"
+"arus.plenger.id"
 
 is only the domain/hosting address.
 
@@ -105,7 +105,7 @@ Do not treat Plenger as the parent company inside the application.
 
 The application branding should display:
 
-NADI
+ARUS
 
 Subtitle:
 
@@ -487,11 +487,11 @@ Fields:
 
 Loan number:
 
-"NADI-LOAN-YYYY-000001"
+"ARUS-LOAN-YYYY-000001"
 
 Example:
 
-"NADI-LOAN-2026-000001"
+"ARUS-LOAN-2026-000001"
 
 ---
 
@@ -1369,7 +1369,7 @@ Create print views for:
 
 Each document should have:
 
-NADI
+ARUS
 
 document title
 
@@ -1443,7 +1443,7 @@ Customer:
 
 Loan:
 
-"NADI-LOAN-2026-000001"
+"ARUS-LOAN-2026-000001"
 
 Payment:
 
@@ -2370,4 +2370,4 @@ A working loan calculator without auditability is a failed application.
 
 A collateral-release system that allows unauthorized release is a failed application.
 
-Build NADI as a coherent loan-management system where the database, business rules, permissions, and UI all enforce the same workflow.
+Build ARUS as a coherent loan-management system where the database, business rules, permissions, and UI all enforce the same workflow.
