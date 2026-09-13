@@ -2029,9 +2029,10 @@ Use:
 
 - Laravel conventions
 - Eloquent relationships
-- Form Requests
+- RuledActions (validation lives in Actions; Form Requests only for Auth flows)
 - Policies
 - Services
+- Repositories extending the shared `App\Abstractions\Repository\ModelRepository` base
 - reusable Blade components
 - named routes
 - migrations
