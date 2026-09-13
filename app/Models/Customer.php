@@ -29,6 +29,7 @@ use Illuminate\Support\Carbon;
  * @property Carbon|null $updated_at
  * @property Carbon|null $deleted_at
  * @property-read Collection<int, Employment> $employments
+ * @property-read Collection<int, Loan> $loans
  */
 class Customer extends Model
 {
@@ -68,6 +69,14 @@ class Customer extends Model
     public function employments(): HasMany
     {
         return $this->hasMany(Employment::class);
+    }
+
+    /**
+     * @return HasMany<Loan, $this>
+     */
+    public function loans(): HasMany
+    {
+        return $this->hasMany(Loan::class);
     }
 
     /**

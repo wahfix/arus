@@ -175,7 +175,45 @@
                     </div>
                 </section>
 
-                @foreach (['loans', 'payments', 'collateral', 'collection', 'verification', 'audit'] as $futureTab)
+                <section x-show="tab === 'loans'" x-cloak>
+                    @can('loan.view')
+                        <flux:card>
+                            <div class="flex flex-col gap-4">
+                                <div class="flex items-center justify-between">
+                                    <flux:heading size="lg">{{ __('Pinjaman') }}</flux:heading>
+                                    @can('loan.create')
+                                        <flux:button size="sm" variant="primary" :href="route('loans.create')" wire:navigate>
+                                            {{ __('Buat Pinjaman') }}
+                                        </flux:button>
+                                    @endcan
+                                </div>
+
+                                @forelse ($customer->loans ?? collect() as $loan)
+                                    <div class="flex items-center justify-between gap-2 border-l-2 border-zinc-200 pl-3 dark:border-zinc-700">
+                                        <div class="flex flex-col">
+                                            <flux:link :href="route('loans.show', $loan)" wire:navigate class="font-mono text-xs">
+                                                {{ $loan->loan_number }}
+                                            </flux:link>
+                                            <span class="text-sm text-zinc-500 dark:text-zinc-400">
+                                                {{ App\Support\Money::formatRupiah($loan->principal_amount) }} ·
+                                                {{ App\Enums\InterestMethod::tryFrom($loan->interest_method)?->label() }}
+                                            </span>
+                                        </div>
+                                        @include('partials.loan-status-badge', ['status' => $loan->status])
+                                    </div>
+                                @empty
+                                    <p class="text-sm text-zinc-500 dark:text-zinc-400">{{ __('Belum ada pinjaman.') }}</p>
+                                @endforelse
+                            </div>
+                        </flux:card>
+                    @else
+                        <flux:card>
+                            <flux:text>{{ __('Anda tidak memiliki izin untuk melihat data pinjaman.') }}</flux:text>
+                        </flux:card>
+                    @endcan
+                </section>
+
+                @foreach (['payments', 'collateral', 'collection', 'verification', 'audit'] as $futureTab)
                     <section x-show="tab === @js($futureTab)" x-cloak>
                         <flux:card>
                             <flux:text>
