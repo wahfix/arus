@@ -2,11 +2,11 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\StoreCustomerRequest;
-use App\Http\Requests\UpdateCustomerRequest;
+use App\Actions\CreateCustomerAction;
+use App\Actions\DeleteCustomerAction;
+use App\Actions\GetCustomersAction;
+use App\Actions\UpdateCustomerAction;
 use App\Models\Customer;
-use App\Repositories\CustomerRepository;
-use App\Services\CustomerService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controllers\HasMiddleware;
@@ -16,8 +16,10 @@ use Illuminate\View\View;
 class CustomerController extends Controller implements HasMiddleware
 {
     public function __construct(
-        private readonly CustomerRepository $customers,
-        private readonly CustomerService $customerService,
+        protected GetCustomersAction $getCustomersAction,
+        protected CreateCustomerAction $createCustomerAction,
+        protected UpdateCustomerAction $updateCustomerAction,
+        protected DeleteCustomerAction $deleteCustomerAction,
     ) {}
 
     public static function middleware(): array
@@ -32,7 +34,7 @@ class CustomerController extends Controller implements HasMiddleware
 
     public function index(Request $request): View
     {
-        $customers = $this->customers->paginate($request->string('q')->toString());
+        $customers = $this->getCustomersAction->handle($request->string('q')->toString());
 
         return view('pages.customers.index', compact('customers'));
     }
@@ -42,9 +44,9 @@ class CustomerController extends Controller implements HasMiddleware
         return view('pages.customers.create');
     }
 
-    public function store(StoreCustomerRequest $request): RedirectResponse
+    public function store(Request $request): RedirectResponse
     {
-        $customer = $this->customerService->create($request->validated());
+        $customer = $this->createCustomerAction->handle($request->all());
 
         session()->flash('status', __('Nasabah berhasil ditambahkan.'));
 
@@ -65,9 +67,9 @@ class CustomerController extends Controller implements HasMiddleware
         return view('pages.customers.edit', compact('customer'));
     }
 
-    public function update(UpdateCustomerRequest $request, Customer $customer): RedirectResponse
+    public function update(Request $request, Customer $customer): RedirectResponse
     {
-        $this->customerService->update($customer, $request->validated());
+        $this->updateCustomerAction->handle(['customer_id' => $customer->id] + $request->all());
 
         session()->flash('status', __('Nasabah berhasil diperbarui.'));
 
@@ -76,7 +78,7 @@ class CustomerController extends Controller implements HasMiddleware
 
     public function destroy(Customer $customer): RedirectResponse
     {
-        $this->customerService->delete($customer);
+        $this->deleteCustomerAction->handle($customer);
 
         session()->flash('status', __('Nasabah berhasil dihapus.'));
 

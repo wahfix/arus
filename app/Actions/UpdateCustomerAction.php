@@ -1,24 +1,31 @@
 <?php
 
-namespace App\Http\Requests;
+namespace App\Actions;
 
-use Illuminate\Foundation\Http\FormRequest;
+use App\Abstractions\Actions\Action;
+use App\Contracts\Action\RuledActionContract;
+use App\Repositories\CustomerRepository;
+use Illuminate\Support\Arr;
 use Illuminate\Validation\Rule;
 
-class UpdateCustomerRequest extends FormRequest
+class UpdateCustomerAction extends Action implements RuledActionContract
 {
+    public function __construct(protected CustomerRepository $customerRepository) {}
+
     /**
+     * @param  array<string, mixed>  $payload
      * @return array<string, mixed>
      */
-    public function rules(): array
+    public function rules(array $payload): array
     {
         return [
+            'customer_id' => ['required', 'integer'],
             'full_name' => ['required', 'string', 'max:255'],
             'national_id_number' => [
                 'required',
                 'string',
                 'max:20',
-                Rule::unique('customers', 'national_id_number')->ignore($this->route('customer')),
+                Rule::unique('customers', 'national_id_number')->ignore($payload['customer_id']),
             ],
             'date_of_birth' => ['nullable', 'date', 'before:today'],
             'gender' => ['nullable', 'string', 'max:20'],
@@ -30,5 +37,16 @@ class UpdateCustomerRequest extends FormRequest
             'emergency_contact_phone' => ['nullable', 'string', 'regex:/^[0-9+][0-9]{9,14}$/'],
             'status' => ['required', 'string', 'in:ACTIVE,INACTIVE,BLOCKED'],
         ];
+    }
+
+    /**
+     * @param  array<string, mixed>  $validatedPayload
+     */
+    protected function handler($payload = null, array $validatedPayload = []): bool
+    {
+        return $this->customerRepository->update(
+            (int) $validatedPayload['customer_id'],
+            Arr::except($validatedPayload, ['customer_id'])
+        );
     }
 }
