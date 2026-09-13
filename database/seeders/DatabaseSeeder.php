@@ -4,6 +4,8 @@ namespace Database\Seeders;
 
 use App\Enums\Permission;
 use App\Enums\RoleName;
+use App\Models\Customer;
+use App\Models\Employment;
 use App\Models\Permission as PermissionRecord;
 use App\Models\Role;
 use App\Models\User;
@@ -18,6 +20,7 @@ class DatabaseSeeder extends Seeder
     {
         $this->seedRolesAndPermissions();
         $this->seedDemoUsers();
+        $this->seedDemoCustomers();
     }
 
     private function seedRolesAndPermissions(): void
@@ -70,6 +73,23 @@ class DatabaseSeeder extends Seeder
 
             $user->roles()->sync([Role::query()->where('name', $roleName->value)->value('id')]);
         }
+    }
+
+    private function seedDemoCustomers(): void
+    {
+        if (Customer::query()->exists()) {
+            return;
+        }
+
+        Customer::factory()
+            ->count(20)
+            ->create()
+            ->each(function (Customer $customer): void {
+                Employment::factory()
+                    ->count(fake()->numberBetween(0, 3))
+                    ->for($customer)
+                    ->create();
+            });
     }
 
     /**

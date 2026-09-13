@@ -1,6 +1,11 @@
 <?php
 
+use App\Enums\Permission;
+use App\Models\Role;
+use App\Models\User;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Str;
 use Tests\TestCase;
 
 /*
@@ -47,4 +52,30 @@ expect()->extend('toBeOne', function () {
 function something()
 {
     // ..
+}
+
+/**
+ * Assign the given permissions to the user via a dedicated tester role.
+ */
+function giveUserPermission(User $user, Permission ...$permissions): User
+{
+    return Model::unguarded(function () use ($user, $permissions): User {
+        $role = Role::create([
+            'name' => 'test-role',
+            'label' => 'Test Role',
+        ]);
+
+        $role->permissions()->attach(
+            collect($permissions)->map(
+                fn (Permission $permission): int => App\Models\Permission::updateOrCreate(
+                    ['name' => $permission->value],
+                    ['label' => Str::headline($permission->value)],
+                )->id,
+            ),
+        );
+
+        $user->roles()->attach($role);
+
+        return $user;
+    });
 }
